@@ -8,22 +8,27 @@ class Drive {
     //  /http://arduino.stackexchange.com/questions/1321/servo-wont-stop-rotating
     int leftServoPin;
     int rightServoPin;
+    int armPin;
     Servo leftServo;
     Servo rightServo;
+    Servo armServo;
 
   public:
-    Drive (int leftServo, int rightServo) {
+    Drive (int leftServo, int rightServo, int armServo) {
       leftServoPin = leftServo;
       rightServoPin = rightServo;
+      armPin = armServo;
     }
 
     void attachServos() {
       //initialzes Servos
       leftServo.attach(leftServoPin);
       rightServo.attach(rightServoPin);
+      armServo.attach (armPin);
       //Put Servos back in the middle
-      leftServo.write (90);
-      rightServo.write (90);
+      leftServo.write (86);
+      rightServo.write (96);
+      Serial.print (leftServo.read());
     }
     void driveStraight (int speed) {
       leftServo.write (speed);
@@ -33,33 +38,20 @@ class Drive {
       leftServo.write (speed);
     }
     void setRight (int speed) {
-      leftServo.write (speed);
+      rightServo.write (speed);
     }
     void stopServos() {
       setLeft(90);
       setRight(90);
     }
-    void turnRight (int speed, int duration) {
-      int startTime = millis();
-      int currentTime = startTime;
-      while ((currentTime - startTime) <= duration) // do this till duration
-      {
-        setRight (speed);
-        setLeft (180-speed);
-        currentTime = millis();
-      }
+    void grab (){
+      armServo.write (180);
+    }
+    void drop () {
+      armServo.write (0);
+      Serial.println (armServo.read());
     }
 
-    void turnLeft (int speed, int duration) {
-      int startTime = millis();
-      int currentTime = startTime;
-      while ((currentTime - startTime) <= duration) // do this till duration
-      {
-        setLeft (speed);
-        setRight (180-speed);
-        currentTime = millis();
-      }
-    }
 
 
 };
@@ -69,12 +61,12 @@ class Camera {
     Pixy pixy;
     Drive robot;
   public:
-    Camera(int leftServo, int rightServo) : robot (leftServo, rightServo) { //Have to do this whole mess in order to have an object in a class
+    Camera(int leftServo, int rightServo, int armPin) : robot (leftServo, rightServo, armPin) { //Have to do this whole mess in order to have an object in a class
       intialize();
     }
 
-
     void intialize () {
+
       pixy.init();//Initializes Camera
       pixy.setServos (500, 500);//Center Servos
     }
@@ -156,16 +148,18 @@ class Camera {
     }
 
 
-
 };
 
-
-
+//Arm is on 6
+  Camera cam (9,10, 6);
+  Drive robot (9,10,6);
 
 void setup() {
+  Serial.begin (9600);
+  robot.attachServos();
 
 }
 
 void loop() {
-
+  robot.grab();
 }
