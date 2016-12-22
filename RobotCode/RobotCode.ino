@@ -26,8 +26,10 @@ class Drive {
       rightServo.attach(rightServoPin);
       armServo.attach (armPin);
       //Put Servos back in the middle
-      leftServo.write (86);
+      leftServo.write (86.3);
       rightServo.write (96);
+      armServo.write (90);
+      Serial.println ("LeftServo");
       Serial.print (leftServo.read());
     }
     void driveStraight (int speed) {
@@ -45,11 +47,14 @@ class Drive {
       setRight(90);
     }
     void grab (){
-      armServo.write (180);
+      armServo.write (100);
+      Serial.println(armServo.read());
+      delay(2000);
     }
     void drop () {
-      armServo.write (0);
+      armServo.write (10);
       Serial.println (armServo.read());
+      delay(2000);
     }
 
 
@@ -162,4 +167,6 @@ void setup() {
 
 void loop() {
   robot.grab();
+  delay(100);
+  robot.drop();
 }
